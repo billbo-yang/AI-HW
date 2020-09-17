@@ -785,6 +785,7 @@ class TrivialVacuumEnvironment(Environment):
     def execute_action(self, agent, action):
         """Change agent's location and/or location's status; track performance.
         Score 10 for each dirt cleaned; -1 for each move."""
+        print(action)
         if action == 'Right':
             agent.location = loc_B
             agent.performance -= 1
