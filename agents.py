@@ -740,7 +740,7 @@ __doc__ += """
 'Suck'
 
 >>> e = TrivialVacuumEnvironment()
->>> e.add_thing(ModelBasedVacuumAgent())
->>> e.run(5)
+>>> e.add_thing(a)
+>>> e.run()
 
 """
