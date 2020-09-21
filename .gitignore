@@ -30,6 +30,12 @@ var/
 *.manifest
 *.spec
 
+# ignore env stuff
+env-test/
+
+# ignore vscode settings
+.vscode/
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt

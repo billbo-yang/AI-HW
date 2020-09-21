@@ -199,12 +199,12 @@ def ReflexVacuumAgent():
     """
 
     def program(percept):
-        location, status = percept
+        status, right = percept
         if status == 'Dirty':
             return 'Suck'
-        elif location == loc_A:
+        elif right:
             return 'Right'
-        elif location == loc_B:
+        elif not right:
             return 'Left'
 
     return Agent(program)
@@ -618,36 +618,72 @@ class TrivialVacuumEnvironment(Environment):
     status. This serves as an example of how to implement a simple
     Environment."""
 
-    def __init__(self):
+    def __init__(self, size):
         super().__init__()
-        self.status = {loc_A: random.choice(['Clean', 'Dirty']),
-                       loc_B: random.choice(['Clean', 'Dirty'])}
+        self.right = True
+        self.size = size
+        self.status = {}
+        for i in range(size):
+            self.status[(i, 0)] = random.choice(['Clean', 'Dirty'])
 
     def thing_classes(self):
         return [Wall, Dirt, ReflexVacuumAgent, RandomVacuumAgent, TableDrivenVacuumAgent, ModelBasedVacuumAgent]
 
     def percept(self, agent):
-        """Returns the agent's location, and the location status (Dirty/Clean)."""
-        return agent.location, self.status[agent.location]
+        """Returns the agent's location, and the location status (Dirty/Clean), and the movement mode."""
+        return self.status[agent.location], self.right
 
     def execute_action(self, agent, action):
         """Change agent's location and/or location's status; track performance.
         Score 10 for each dirt cleaned; -1 for each move."""
         print(action)
+        loc = agent.location
         if action == 'Right':
-            agent.location = loc_B
+            conv = list(loc)
+            conv[0] += 1
+            loc = tuple(conv)
+            agent.location = loc
             agent.performance -= 1
         elif action == 'Left':
-            agent.location = loc_A
+            conv = list(loc)
+            conv[0] -= 1
+            loc = tuple(conv)
+            agent.location = loc
             agent.performance -= 1
         elif action == 'Suck':
             if self.status[agent.location] == 'Dirty':
                 agent.performance += 10
             self.status[agent.location] = 'Clean'
 
+        self.determineDir(agent)
+
+    def add_thing(self, thing, location=None):
+        """Overriding base method to add initial direction"""
+        if not isinstance(thing, Thing):
+            thing = Agent(thing)
+        if thing in self.things:
+            print("Can't add the same thing twice")
+        else:
+            thing.location = location if location is not None else self.default_location(thing)
+            self.things.append(thing)
+            if isinstance(thing, Agent):
+                thing.performance = 0
+                self.agents.append(thing)
+                self.determineDir(thing)
+
+    def determineDir(self, agent):
+        first_loc = (0, 0)
+        last_loc = (self.size-1, 0)
+        # print("*************{}".format(first_loc))
+        # print("*************{}".format(last_loc))
+        if(agent.location == first_loc):
+            self.right = True
+        elif(agent.location == last_loc):
+            self.right = False
+
     def default_location(self, thing):
         """Agents start in either location at random."""
-        return random.choice([loc_A, loc_B])
+        return random.choice(list(self.status.keys()))
 
 # ______________________________________________________________________________
 
