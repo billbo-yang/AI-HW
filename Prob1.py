@@ -160,12 +160,13 @@ subjects_y = subjects_df.loc[:, subjects_df.columns == "CLASS"]
 bodies_X_train, bodies_X_test, bodies_y_train, bodies_y_test = train_test_split(bodies_X, bodies_y, test_size=0.2, random_state=5)
 subjects_X_train, subjects_X_test, subjects_y_train, subjects_y_test = train_test_split(subjects_X, subjects_y, test_size=0.2, random_state=5)
 
-print("Predicting using email body dataset:")
+# use our custom classifier
+print("Predicting using email body dataset and custom Naive Bayes Classifier:")
 nbc1 = NaiveBayesClassifier()
 nbc1.train(bodies_X_train, bodies_y_train)
 nbc1.predict(bodies_X_test, bodies_y_test)
 
-print("\nPrediction using email subject dataset:")
+print("\nPrediction using email subject dataset and custom Naive Bayes Classifier:")
 nbc2 = NaiveBayesClassifier()
 nbc2.train(subjects_X_train, subjects_y_train)
 nbc2.predict(subjects_X_test, subjects_y_test)
@@ -192,6 +193,7 @@ def get_f_measure(predictions, labels):
     return (2*pre*rec)/(pre + rec)
 
 
+# compare results to sklearn's stuff
 print("\nPredicting using email body dataset and sklearn's Naive Bayes Classifier:")
 nbc1 = MultinomialNB()
 nbc1.fit(bodies_X_train, bodies_y_train.T.values[0])
